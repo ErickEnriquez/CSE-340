@@ -8,3 +8,8 @@ git add . //saves all additions we added into the code
 git commit -m "message goes here" //makes a commit to git and then you can add in a message
 git push origin master //pushes the master branch of origin remote to gitlab
 git pull //pulls ant changes into the workstation
+
+
+redirecting input
+
+./p1 <./tests/t1_ss_outputstmt.txt // example
