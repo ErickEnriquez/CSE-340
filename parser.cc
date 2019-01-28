@@ -87,7 +87,9 @@ void Parser::parse_proc_decl_section(){
 
 void Parser::parse_proc_decl(){
 	Token t1 = lexer.GetToken();//PROC
-	if(t1.token_type != PROC)
+	if(t1.token_type != PROC){
+		syntax_error();
+	}
 }
 //parses main in input
 void Parser::parse_main(){
