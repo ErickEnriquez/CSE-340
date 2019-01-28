@@ -64,13 +64,29 @@ void Parser::parse_input(){
 		return;
 }
 
+//parses main in input
+void Parser::parse_main(){
+	Token t = lexer.GetToken();//get the token but if we get the terminal that is expected you consume it
+	if(t.token_type == MAIN){
+		parse_procedure_body();
+	}
+	else{
+		syntax_error();
+	}
+	return;
+}
+
+void Parser::parse_procedure_body(){
+	parse_statement_list();
+	return;
+}
 
 
-bool Parser::parse_operator(){
+void Parser::parse_operator(){
 	Token t = lexer.GetToken();
 	if(t.token_type != PLUS || t.token_type != MINUS || t.token_type != DIV || t.token_type != MULT)
 		syntax_error();
-	return true;
+	return ;
 }
 
 bool Parser::parse_procedure_name(){

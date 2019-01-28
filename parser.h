@@ -24,7 +24,7 @@ public:
 	bool parse_proc_decl_section();
 	bool parse_proc_decl();
 	bool parse_procedure_name();
-	bool parse_prodecdure_body();
+	void parse_procedure_body();
 	bool parse_statement_list();
 	bool parse_statement();
 	bool parse_input_statement();
@@ -33,13 +33,14 @@ public:
 	bool parse_do_statement();
 	bool parse_assign_statement();
 	bool parse_expr();
-	bool parse_operator();
+	void parse_operator();
 	bool parse_primary();
-	bool parse_main();
+	void parse_main();
 	void parse_inputs();
 
 	/////////////////////////////////////////////
 	/*done?*/
+	
 
 
 
