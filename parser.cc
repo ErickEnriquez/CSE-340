@@ -63,6 +63,13 @@ bool Parser::parse_operator(){
 	return true;
 }
 
+bool Parser::parse_procedure_name(){
+	Token t = lexer.GetToken();
+	if(t.token_type != ID || t.token_type != NUM)
+		syntax_error();
+	return true;
+}
+
 
 int main()
 {
