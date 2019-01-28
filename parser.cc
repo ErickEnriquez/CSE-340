@@ -80,6 +80,48 @@ void Parser::parse_procedure_body(){
 	parse_statement_list();
 	return;
 }
+void Parser::parse_statement_list(){
+	Token t = lexer.GetToken();//if we get a number we have finished parsing the statements and we are in the inputs
+	if( t.token_type != NUM){//while there are more statements to parse
+		parse_statement();
+	}
+	return;
+}
+
+void Parser::parse_statement(){
+	Token t1 = lexer.GetToken();// INPUT || OUTPUT || ID || DO
+	if(t1.token_type == INPUT){
+		lexer.UngetToken(t1);
+		parse_input_statement();
+	}
+	else if(t1.token_type ==OUTPUT){
+		lexer.UngetToken(t1);
+		parse_ouput_statement();
+	}
+	else if(t1.token_type == DO){
+		lexer.UngetToken(t1);
+		parse_do_statement();
+	}
+	else if(t1.token_type == ID){
+		Token t2 = lexer.GetToken();// EQUAL || SEMICOLON
+		if(t2.token_type == EQUAL){
+			lexer.UngetToken(t2);
+			lexer.UngetToken(t1);
+			parse_assign_statement();
+		}
+		else if(t2.token_type == SEMICOLON){
+
+		}
+		else{
+			syntax_error();
+		}
+	}
+	else{
+		syntax_error();
+	}
+
+	
+}
 
 
 void Parser::parse_operator(){

@@ -25,8 +25,8 @@ public:
 	bool parse_proc_decl();
 	bool parse_procedure_name();
 	void parse_procedure_body();
-	bool parse_statement_list();
-	bool parse_statement();
+	void parse_statement_list();
+	void parse_statement();
 	bool parse_input_statement();
 	bool parse_ouput_statement();
 	bool parse_procedure_invocation();
