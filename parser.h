@@ -32,9 +32,9 @@ public:
 	void parse_procedure_invocation();
 	void parse_do_statement();
 	void parse_assign_statement();
-	bool parse_expr();
+	void parse_expr();
 	void parse_operator();
-	bool parse_primary();
+	void parse_primary();
 	void parse_main();
 	void parse_inputs();
 

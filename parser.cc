@@ -242,6 +242,33 @@ void Parser::parse_inputs(){
 	return;
 }
 
+void Parser::parse_expr(){
+	Token t = lexer.GetToken();//If we get a semicolon then we are done parsing expression
+	if(t.token_type == SEMICOLON){
+		return;
+	}
+	else{
+		parse_primary();
+		parse_operator();
+		parse_primary();
+	}
+}
+
+
+void Parser::parse_primary(){
+	Token t= lexer.GetToken(); //ID || NUM
+	if(t.token_type == ID){
+
+	}
+	else if(t.token_type == NUM ){
+
+	}
+	else{
+		syntax_error();
+	}
+	return;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int main()
 {
