@@ -20,18 +20,18 @@ private:
 public:
 	//to do//////////////////////////////////
 	void parse_input();
-	bool parse_program();
+	void parse_program();
 	bool parse_proc_decl_section();
 	bool parse_proc_decl();
 	bool parse_procedure_name();
 	void parse_procedure_body();
 	void parse_statement_list();
 	void parse_statement();
-	bool parse_input_statement();
-	bool parse_ouput_statement();
-	bool parse_procedure_invocation();
-	bool parse_do_statement();
-	bool parse_assign_statement();
+	void parse_input_statement();
+	void parse_ouput_statement();
+	void parse_procedure_invocation();
+	void parse_do_statement();
+	void parse_assign_statement();
 	bool parse_expr();
 	void parse_operator();
 	bool parse_primary();

@@ -47,21 +47,24 @@ Token Parser::peek()
 
 //parses the begining of the input
 void Parser::parse_input(){
-	Token t = lexer.GetToken();
-	if(t.token_type == MAIN){
-		lexer.UngetToken(t);
-		parse_main();
-	}
-	else if( t.token_type == PROC){
-		lexer.UngetToken(t);
-		parse_proc_decl_section();
-	}
-	else{
-		syntax_error();
-	}
+	parse_program();
 	parse_inputs();
 		cout<<"parse successful\n";
 		return;
+}
+
+void Parser::parse_program(){
+	Token t;
+	Parser p;
+	t = p.peek();
+	if(t.token_type == MAIN){
+		parse_main();
+	}
+	else if(t.token_type == PROC){
+		parse_proc_decl_section();
+		parse_main();
+	}
+	return;
 }
 
 //parses main in input
@@ -110,7 +113,9 @@ void Parser::parse_statement(){
 			parse_assign_statement();
 		}
 		else if(t2.token_type == SEMICOLON){
-
+			lexer.UngetToken(t2);
+			lexer.UngetToken(t1);
+			parse_procedure_invocation();
 		}
 		else{
 			syntax_error();
@@ -121,6 +126,67 @@ void Parser::parse_statement(){
 	}
 
 	
+}
+
+void Parser::parse_input_statement(){
+	Token t1 = lexer.GetToken();//INPUT
+	Token t2 = lexer.GetToken();//ID
+	if(t1.token_type != INPUT || t2.token_type != ID){
+		syntax_error();
+	}
+	parse_expr();
+	Token t3 = lexer.GetToken();//SEMICOLON
+	if(t3.token_type != SEMICOLON){
+		syntax_error();
+	}
+	return;
+}
+
+void Parser::parse_ouput_statement(){
+	Token t1 = lexer.GetToken();//OUTPUT
+	Token t2 = lexer.GetToken();//ID
+	if(t1.token_type != OUTPUT || t2.token_type != ID){
+		syntax_error();
+	}
+	parse_expr();
+	Token t3 = lexer.GetToken();//SEMICOLON
+	if(t3.token_type != SEMICOLON){
+		syntax_error();
+	}
+	return ;
+}
+
+void Parser::parse_do_statement(){
+	Token t1 = lexer.GetToken();//DO
+	Token t2 = lexer.GetToken();//ID
+	if(t1.token_type != DO || t2.token_type != ID ){
+		syntax_error();
+	}
+	parse_procedure_invocation();
+	return;
+}
+
+void Parser::parse_procedure_invocation(){
+	Token t1 = lexer.GetToken();//ID
+	Token t2  = lexer.GetToken();//SEMICOLON
+	if(t1.token_type != ID || t2.token_type != SEMICOLON){
+		syntax_error();
+	}
+	return;
+}
+
+void Parser::parse_assign_statement(){
+	Token t1 = lexer.GetToken();//ID
+	Token t2 = lexer.GetToken();//EQUAL
+	if(t1.token_type != ID || t2.token_type != EQUAL){
+		syntax_error();
+	}
+	parse_expr();
+	Token t3 = lexer.GetToken();//SEMICOLON
+	if(t3.token_type != SEMICOLON){
+		syntax_error();
+	}
+	return;
 }
 
 
