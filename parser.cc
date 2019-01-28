@@ -43,18 +43,28 @@ Token Parser::peek()
 	return t;
 }
 
-// Parsing
-bool Parser::parse_input(Token t){
-	
-	if (t.token_type == MAIN) {
-		cout << "main\n";
-		t = lexer.GetToken();
+// Parsing//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//parses the begining of the input
+void Parser::parse_input(){
+	Token t = lexer.GetToken();
+	if(t.token_type == MAIN){
+		lexer.UngetToken(t);
+		parse_main();
 	}
-	else {
+	else if( t.token_type == PROC){
+		lexer.UngetToken(t);
+		parse_proc_decl_section();
+	}
+	else{
 		syntax_error();
 	}
-	return false;
+	parse_inputs();
+		cout<<"parse successful\n";
+		return;
 }
+
+
 
 bool Parser::parse_operator(){
 	Token t = lexer.GetToken();
@@ -69,8 +79,23 @@ bool Parser::parse_procedure_name(){
 		syntax_error();
 	return true;
 }
+//
+void Parser::parse_inputs(){
+	Token t = lexer.GetToken();
+	if(t.token_type == NUM){
+		//do stuff here
+		parse_inputs();
+	}
+	else if(t.token_type == END_OF_FILE){
+		//program is done parsing input
+	}
+	else{
+		syntax_error();
+	}
+	return;
+}
 
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int main()
 {
 	LexicalAnalyzer lexer;

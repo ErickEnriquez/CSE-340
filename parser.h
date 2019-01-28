@@ -19,7 +19,7 @@ private:
 
 public:
 	//to do//////////////////////////////////
-	bool parse_input(Token t);
+	void parse_input();
 	bool parse_program();
 	bool parse_proc_decl_section();
 	bool parse_proc_decl();
@@ -36,7 +36,7 @@ public:
 	bool parse_operator();
 	bool parse_primary();
 	bool parse_main();
-	bool parse_inputs();
+	void parse_inputs();
 
 	/////////////////////////////////////////////
 	/*done?*/
