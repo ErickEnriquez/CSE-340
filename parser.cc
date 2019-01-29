@@ -60,6 +60,7 @@ void Parser::parse_program() {
 		parse_main();
 	}
 	else if (t.token_type == PROC) {
+		lexer.UngetToken(t);
 		parse_proc_decl_section();
 		parse_main();
 	}
@@ -85,11 +86,23 @@ void Parser::parse_proc_decl_section() {
 }
 
 void Parser::parse_proc_decl() {
-	Token t1 = lexer.GetToken();//PROC
+	Token t1 = lexer.GetToken();//PROC COMSUME TOKEN
 	if (t1.token_type != PROC) {
 		syntax_error();
 	}
+	parse_procedure_name();
+	parse_procedure_body();
+	Token t2 = lexer.GetToken();//ENDPROC CONSUME TOKEN
+	
 }
+
+void Parser::parse_procedure_name() {
+	Token t = lexer.GetToken();//ID OR NUM , CONSUME TOKEN
+	if (t.token_type != ID || t.token_type != NUM)
+		syntax_error();
+	return;
+}
+
 //parses main in input
 void Parser::parse_main() {
 	Token t = lexer.GetToken();//get the token but if we get the terminal that is expected you consume it
@@ -220,12 +233,7 @@ void Parser::parse_operator() {
 	return;
 }
 
-void Parser::parse_procedure_name() {
-	Token t = lexer.GetToken();
-	if (t.token_type != ID || t.token_type != NUM)
-		syntax_error();
-	return;
-}
+
 
 void Parser::parse_inputs() {
 	Token t = lexer.GetToken();

@@ -19,11 +19,11 @@ private:
 
 public:
 	//to do//////////////////////////////////
-	void parse_input();
-	void parse_program();
-	void parse_proc_decl_section();
-	void parse_proc_decl();
-	void parse_procedure_name();
+	
+	
+	
+	
+	
 	void parse_procedure_body();
 	void parse_statement_list();
 	void parse_statement();
@@ -40,10 +40,11 @@ public:
 
 	/////////////////////////////////////////////
 	/*done?*/
-	
-
-
-
+	void parse_input();
+	void parse_program();
+	void parse_proc_decl_section();
+	void parse_proc_decl();
+	void parse_procedure_name();
 
 	//////////////////////////////////////////////
 	/*DEF DONE*/
