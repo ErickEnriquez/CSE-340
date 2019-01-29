@@ -93,13 +93,23 @@ void Parser::parse_proc_decl() {
 	parse_procedure_name();
 	parse_procedure_body();
 	Token t2 = lexer.GetToken();//ENDPROC CONSUME TOKEN
-	
+
 }
 
 void Parser::parse_procedure_name() {
 	Token t = lexer.GetToken();//ID OR NUM , CONSUME TOKEN
 	if (t.token_type != ID || t.token_type != NUM)
 		syntax_error();
+	return;
+}
+
+void Parser::parse_procedure_body() {
+	Token t = lexer.GetToken();;//ID || OUPUT || INPUT || DO
+	if(t.token_type != ID || t.token_type != OUTPUT || t.token_type != INPUT || t.token_type != DO);{
+		syntax_error();
+	}
+	lexer.UngetToken(t);
+	parse_statement_list();
 	return;
 }
 
@@ -115,10 +125,7 @@ void Parser::parse_main() {
 	return;
 }
 
-void Parser::parse_procedure_body() {
-	parse_statement_list();
-	return;
-}
+
 void Parser::parse_statement_list() {
 	Token t = lexer.GetToken();//if we get a number we have finished parsing the statements and we are in the inputs
 	if (t.token_type != NUM) {//while there are more statements to parse
