@@ -13,3 +13,19 @@ git pull //pulls ant changes into the workstation
 redirecting input
 
 ./p1 <./tests/t1_ss_outputstmt.txt // example
+
+
+
+//debugging/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//first in the terminal type 
+g++ -g inputbuff.cc lexer.cc parser.cc -o p1 // to create the executable p1 that we will need to run in the gdb debugger
+gdb p1 // to start the gdb debugger with p1 
+run // to let the file run in the terminal
+
+//now in VS code press ctrl+shift+D to shift to the debugger window
+click the launch button in the top left corner , make sure that you add breakpoints if you need
+code should run and stop at the breakpoints
+//if you want to change what gets redirected to the program go into the JSON file and give it the file you want to use 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

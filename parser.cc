@@ -104,9 +104,15 @@ void Parser::parse_procedure_name() {
 }
 
 void Parser::parse_procedure_body() {
-	Token t = lexer.GetToken();;//ID || OUPUT || INPUT || DO
-	if(t.token_type != ID || t.token_type != OUTPUT || t.token_type != INPUT || t.token_type != DO);{
-		syntax_error();
+	Token t = lexer.GetToken();//ID || OUPUT || INPUT || DO
+	if (t.token_type != OUTPUT) {//if the token given isn't any of the expected tokens throw a syntax error
+		if (t.token_type != ID) {
+			if (t.token_type != INPUT) {
+				if (t.token_type != DO) {
+					syntax_error();
+				}
+			}
+		}
 	}
 	lexer.UngetToken(t);
 	parse_statement_list();
@@ -128,7 +134,7 @@ void Parser::parse_main() {
 // should go back into this becuase it could cause infinite recursion
 void Parser::parse_statement_list() {
 	Token t = lexer.GetToken();//if we get a number we have finished parsing the statements and we are in the inputs
-	if(t.token_type == ENDPROC){//if we get endproc then we are done parsing statements
+	if (t.token_type == ENDPROC) {//if we get endproc then we are done parsing statements
 		lexer.UngetToken(t);
 		return;
 	}
@@ -136,7 +142,11 @@ void Parser::parse_statement_list() {
 		lexer.UngetToken(t);
 		parse_statement();
 	}
-	else if(t.token_type != END_OF_FILE){
+	else if (t.token_type == NUM) {
+		lexer.UngetToken(t);
+		return;
+	}
+	else if (t.token_type == END_OF_FILE) {
 		syntax_error();
 	}
 
@@ -166,7 +176,7 @@ void Parser::parse_statement() {
 		lexer.UngetToken(t1);
 		parse_assign_statement();
 	}
-	else if (t1.token_type == ID && t2.token_type == SEMICOLON){
+	else if (t1.token_type == ID && t2.token_type == SEMICOLON) {
 		lexer.UngetToken(t2);
 		lexer.UngetToken(t1);
 		parse_procedure_invocation();
