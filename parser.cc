@@ -10,6 +10,7 @@
 #include <iostream>
 #include <cstdlib>
 #include "parser.h"
+#include "defns.h"
 
 using namespace std;
 
@@ -295,6 +296,22 @@ void Parser::parse_primary() {
 	}
 	return;
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+string* mem = new string[1000];// dynamic array of 1000 elements to hold data
+
+//this function wil take in a string which is the token t.lexme and will look to see if it already exists in the symbol table
+//and return its location in the array 
+int loc(std::string s){
+	int count = 0 ; 
+	while(count < 1000){
+		if(mem[count] == s){
+		return count;
+		}
+	}
+	return -1;//if not found in the symbol table we return a -1
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int main()
