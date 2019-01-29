@@ -29,3 +29,8 @@ code should run and stop at the breakpoints
 //if you want to change what gets redirected to the program go into the JSON file and give it the file you want to use 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+usefyl shortcuts in vscode
+ctrl+k ctrl+0 //to collapse all th functions
+ctrl+k ctrl+j // to expand all
