@@ -125,45 +125,51 @@ void Parser::parse_main() {
 	return;
 }
 
-
+// should go back into this becuase it could cause infinite recursion
 void Parser::parse_statement_list() {
 	Token t = lexer.GetToken();//if we get a number we have finished parsing the statements and we are in the inputs
-	if (t.token_type != NUM) {//while there are more statements to parse
+	if(t.token_type == ENDPROC){//if we get endproc then we are done parsing statements
+		lexer.UngetToken(t);
+		return;
+	}
+	else if (t.token_type != NUM) {//while there are more statements to parse
 		lexer.UngetToken(t);
 		parse_statement();
 	}
-	return;
+	else if(t.token_type != END_OF_FILE){
+		syntax_error();
+	}
+
+	parse_statement_list();
 }
 
 void Parser::parse_statement() {
 	Token t1 = lexer.GetToken();// INPUT || OUTPUT || ID || DO
+	Token t2 = lexer.GetToken();// EQUAL || SEMICOLON
 	if (t1.token_type == INPUT) {
+		lexer.UngetToken(t2);
 		lexer.UngetToken(t1);
 		parse_input_statement();
 	}
 	else if (t1.token_type == OUTPUT) {
+		lexer.UngetToken(t2);
 		lexer.UngetToken(t1);
 		parse_ouput_statement();
 	}
 	else if (t1.token_type == DO) {
+		lexer.UngetToken(t2);
 		lexer.UngetToken(t1);
 		parse_do_statement();
 	}
-	else if (t1.token_type == ID) {
-		Token t2 = lexer.GetToken();// EQUAL || SEMICOLON
-		if (t2.token_type == EQUAL) {
-			lexer.UngetToken(t2);
-			lexer.UngetToken(t1);
-			parse_assign_statement();
-		}
-		else if (t2.token_type == SEMICOLON) {
-			lexer.UngetToken(t2);
-			lexer.UngetToken(t1);
-			parse_procedure_invocation();
-		}
-		else {
-			syntax_error();
-		}
+	else if (t1.token_type == ID && t2.token_type == EQUAL) {
+		lexer.UngetToken(t2);
+		lexer.UngetToken(t1);
+		parse_assign_statement();
+	}
+	else if (t1.token_type == ID && t2.token_type == SEMICOLON){
+		lexer.UngetToken(t2);
+		lexer.UngetToken(t1);
+		parse_procedure_invocation();
 	}
 	else {
 		syntax_error();
@@ -173,13 +179,13 @@ void Parser::parse_statement() {
 }
 
 void Parser::parse_input_statement() {
-	Token t1 = lexer.GetToken();//INPUT
-	Token t2 = lexer.GetToken();//ID
+	Token t1 = lexer.GetToken();//INPUT CONSUME
+	Token t2 = lexer.GetToken();//ID	CONSUME
 	if (t1.token_type != INPUT || t2.token_type != ID) {
 		syntax_error();
 	}
 	parse_expr();
-	Token t3 = lexer.GetToken();//SEMICOLON
+	Token t3 = lexer.GetToken();//SEMICOLON CONSUME
 	if (t3.token_type != SEMICOLON) {
 		syntax_error();
 	}
@@ -187,13 +193,13 @@ void Parser::parse_input_statement() {
 }
 
 void Parser::parse_ouput_statement() {
-	Token t1 = lexer.GetToken();//OUTPUT
-	Token t2 = lexer.GetToken();//ID
+	Token t1 = lexer.GetToken();//OUTPUT CONSUME
+	Token t2 = lexer.GetToken();//ID	CONSUME
 	if (t1.token_type != OUTPUT || t2.token_type != ID) {
 		syntax_error();
 	}
 	parse_expr();
-	Token t3 = lexer.GetToken();//SEMICOLON
+	Token t3 = lexer.GetToken();//SEMICOLON	CONSUME
 	if (t3.token_type != SEMICOLON) {
 		syntax_error();
 	}
@@ -201,8 +207,8 @@ void Parser::parse_ouput_statement() {
 }
 
 void Parser::parse_do_statement() {
-	Token t1 = lexer.GetToken();//DO
-	Token t2 = lexer.GetToken();//ID
+	Token t1 = lexer.GetToken();//DO	CONSUME
+	Token t2 = lexer.GetToken();//ID	CONSUME
 	if (t1.token_type != DO || t2.token_type != ID) {
 		syntax_error();
 	}
@@ -211,8 +217,8 @@ void Parser::parse_do_statement() {
 }
 
 void Parser::parse_procedure_invocation() {
-	Token t1 = lexer.GetToken();//ID
-	Token t2 = lexer.GetToken();//SEMICOLON
+	Token t1 = lexer.GetToken();//ID	CONSUME
+	Token t2 = lexer.GetToken();//SEMICOLON	CONSUME
 	if (t1.token_type != ID || t2.token_type != SEMICOLON) {
 		syntax_error();
 	}
@@ -220,13 +226,13 @@ void Parser::parse_procedure_invocation() {
 }
 
 void Parser::parse_assign_statement() {
-	Token t1 = lexer.GetToken();//ID
-	Token t2 = lexer.GetToken();//EQUAL
+	Token t1 = lexer.GetToken();//ID	CONSUME
+	Token t2 = lexer.GetToken();//EQUAL	CONSUME
 	if (t1.token_type != ID || t2.token_type != EQUAL) {
 		syntax_error();
 	}
 	parse_expr();
-	Token t3 = lexer.GetToken();//SEMICOLON
+	Token t3 = lexer.GetToken();//SEMICOLON	CONSUME
 	if (t3.token_type != SEMICOLON) {
 		syntax_error();
 	}
@@ -234,7 +240,7 @@ void Parser::parse_assign_statement() {
 }
 
 void Parser::parse_operator() {
-	Token t = lexer.GetToken();
+	Token t = lexer.GetToken();// ID || MINUS || DIV || MULT	CONSUME!!!!
 	if (t.token_type != PLUS || t.token_type != MINUS || t.token_type != DIV || t.token_type != MULT)
 		syntax_error();
 	return;
@@ -243,12 +249,13 @@ void Parser::parse_operator() {
 
 
 void Parser::parse_inputs() {
-	Token t = lexer.GetToken();
+	Token t = lexer.GetToken();// NUM	CONSUME!!!!!!
 	if (t.token_type == NUM) {
 		//do stuff here
 		parse_inputs();
 	}
 	else if (t.token_type == END_OF_FILE) {
+		lexer.UngetToken(t);
 		//program is done parsing input
 	}
 	else {
