@@ -10,7 +10,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/p1",
-            "args": ["${workspaceFolder}</tests/t1_ss_ouputstmt.txt"],
+            "args": ["${workspaceFolder}<./tests/t1_ss_outputstmt.txt"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

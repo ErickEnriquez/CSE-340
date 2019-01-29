@@ -105,14 +105,8 @@ void Parser::parse_procedure_name() {
 
 void Parser::parse_procedure_body() {
 	Token t = lexer.GetToken();//ID || OUPUT || INPUT || DO
-	if (t.token_type != OUTPUT) {//if the token given isn't any of the expected tokens throw a syntax error
-		if (t.token_type != ID) {
-			if (t.token_type != INPUT) {
-				if (t.token_type != DO) {
-					syntax_error();
-				}
-			}
-		}
+	if (t.token_type != OUTPUT && t.token_type != INPUT && t.token_type != DO && t.token_type != ID) {//if the token given isn't any of the expected tokens throw a syntax error
+		syntax_error();
 	}
 	lexer.UngetToken(t);
 	parse_statement_list();
@@ -251,7 +245,7 @@ void Parser::parse_assign_statement() {
 
 void Parser::parse_operator() {
 	Token t = lexer.GetToken();// ID || MINUS || DIV || MULT	CONSUME!!!!
-	if (t.token_type != PLUS || t.token_type != MINUS || t.token_type != DIV || t.token_type != MULT)
+	if (t.token_type != PLUS && t.token_type != MINUS && t.token_type != DIV && t.token_type != MULT)
 		syntax_error();
 	return;
 }
