@@ -16,6 +16,8 @@ using namespace std;
 
 string* mem = new string[1000];// dynamic array of 1000 elements to hold data
 int next_availible;
+struct linkedList* list = new linkedList();//create a global linkedList
+
 //this function wil take in a string which is the token t.lexme and will look to see if it already exists in the symbol table
 //and return its location in the array 
 int loc(std::string s){
@@ -151,7 +153,18 @@ void Parser::parse_statement_list() {
 	}
 	else if (t.token_type != NUM) {//while there are more statements to parse
 		lexer.UngetToken(t);
-		parse_statement();
+		stmt_node* st =  parse_statement();
+		if(list->start == nullptr)
+			list->start = st;
+		else{
+			stmt_node* temp =  list->start;
+			while(temp->next != nullptr){
+				temp = temp->next;
+			}
+			temp->next = st;
+
+		}
+		
 	}
 	else if (t.token_type == NUM) {
 		lexer.UngetToken(t);
@@ -161,12 +174,12 @@ void Parser::parse_statement_list() {
 		syntax_error();
 	}
 
-	parse_statement_list();
 }
 
-void Parser::parse_statement() {
+struct stmt_node* Parser::parse_statement() {
 	Token t1 = lexer.GetToken();// INPUT || OUTPUT || ID || DO
 	Token t2 = lexer.GetToken();// EQUAL || SEMICOLON
+	stmt_node* node = nullptr ;
 	if (t1.token_type == INPUT) {
 		lexer.UngetToken(t2);
 		lexer.UngetToken(t1);
@@ -175,7 +188,7 @@ void Parser::parse_statement() {
 	else if (t1.token_type == OUTPUT) {
 		lexer.UngetToken(t2);
 		lexer.UngetToken(t1);
-		parse_ouput_statement();
+		node =  parse_ouput_statement();
 	}
 	else if (t1.token_type == DO) {
 		lexer.UngetToken(t2);
@@ -195,7 +208,7 @@ void Parser::parse_statement() {
 	else {
 		syntax_error();
 	}
-
+return node;
 
 }
 
@@ -236,6 +249,7 @@ stmt_node* Parser::parse_ouput_statement() {
 	}
 	stmt_node* st = new stmt_node();
 	st->statement_type = OUTPUT;
+	st->next = nullptr;
 	int loca = loc(t2.lexeme);
 	if(loca != -1)
 		st->op1 = loca;//store the location of the first symbol in the array
@@ -347,7 +361,7 @@ int main()
 	LexicalAnalyzer lexer;
 	Token token;
 	Parser p;//make a parser object to parse the input
-	
+	list->start = nullptr;//initialize the start of the list to be a nullptr
 	p.parse_input();
 
 }

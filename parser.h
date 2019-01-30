@@ -58,7 +58,7 @@ public:
 	void parse_procedure_name();
 	void parse_procedure_body();
 	void parse_statement_list();
-	void parse_statement();
+	struct stmt_node* parse_statement();
 
 	//////////////////////////////////////////////
 	/*DEF DONE*/
