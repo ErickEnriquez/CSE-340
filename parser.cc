@@ -24,6 +24,7 @@ int loc(std::string s){
 		if(mem[count] == s){
 		return count;
 		}
+		count++;
 	}
 	return -1;//if not found in the symbol table we return a -1
 }
@@ -198,6 +199,7 @@ void Parser::parse_statement() {
 
 }
 
+//this function takes in retuns a stmt_node* to be added into the linked list later
 stmt_node* Parser::parse_input_statement() {
 	Token t1 = lexer.GetToken();//INPUT CONSUME
 	Token t2 = lexer.GetToken();//ID	CONSUME
@@ -226,18 +228,29 @@ stmt_node* Parser::parse_input_statement() {
 	return st;
 }
 
-void Parser::parse_ouput_statement() {
+stmt_node* Parser::parse_ouput_statement() {
 	Token t1 = lexer.GetToken();//OUTPUT CONSUME
 	Token t2 = lexer.GetToken();//ID	CONSUME
 	if (t1.token_type != OUTPUT || t2.token_type != ID) {
 		syntax_error();
+	}
+	stmt_node* st = new stmt_node();
+	st->statement_type = OUTPUT;
+	int loca = loc(t2.lexeme);
+	if(loca != -1)
+		st->op1 = loca;//store the location of the first symbol in the array
+	else{
+		mem[next_availible] = t2.lexeme;//store the symbol in the symbol table
+		st->op1 = next_availible;//store the location of the symbol 
+		next_availible++;//increment next_availible by 1
+
 	}
 	parse_expr();
 	Token t3 = lexer.GetToken();//SEMICOLON	CONSUME
 	if (t3.token_type != SEMICOLON) {
 		syntax_error();
 	}
-	return;
+	return st ;
 }
 
 void Parser::parse_do_statement() {
@@ -335,9 +348,6 @@ int main()
 	Token token;
 	Parser p;//make a parser object to parse the input
 	
-
-
-
-	//p.parse_input();
+	p.parse_input();
 
 }

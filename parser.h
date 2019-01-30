@@ -39,7 +39,7 @@ public:
 	//to do//////////////////////////////////
 	
 	struct stmt_node* parse_input_statement();
-	void parse_ouput_statement();
+	struct stmt_node* parse_ouput_statement();
 	void parse_procedure_invocation();
 	void parse_do_statement();
 	void parse_assign_statement();
