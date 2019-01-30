@@ -9,6 +9,21 @@
 #include <string>
 #include "lexer.h"
 
+
+	struct stmt_node// node for every statment
+{
+    int statement_type;
+    int LHS;
+    int operator_type;
+    int op1;
+    int op2; 
+    struct stmt_node* next;
+};
+
+struct linkedList{//start of the statements
+    struct stmt_node* start;
+};
+
 class Parser {
 private:
 	LexicalAnalyzer lexer;
@@ -18,9 +33,12 @@ private:
 	Token peek();
 
 public:
+
+	struct linked_list* head;
+
 	//to do//////////////////////////////////
 	
-	void parse_input_statement();
+	struct stmt_node* parse_input_statement();
 	void parse_ouput_statement();
 	void parse_procedure_invocation();
 	void parse_do_statement();

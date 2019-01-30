@@ -10,9 +10,24 @@
 #include <iostream>
 #include <cstdlib>
 #include "parser.h"
-#include "defns.h"
+
 
 using namespace std;
+
+string* mem = new string[1000];// dynamic array of 1000 elements to hold data
+int next_availible;
+//this function wil take in a string which is the token t.lexme and will look to see if it already exists in the symbol table
+//and return its location in the array 
+int loc(std::string s){
+	int count = 0 ; 
+	while(count < 1000){
+		if(mem[count] == s){
+		return count;
+		}
+	}
+	return -1;//if not found in the symbol table we return a -1
+}
+
 
 void Parser::syntax_error()
 {
@@ -183,10 +198,24 @@ void Parser::parse_statement() {
 
 }
 
-void Parser::parse_input_statement() {
+stmt_node* Parser::parse_input_statement() {
 	Token t1 = lexer.GetToken();//INPUT CONSUME
 	Token t2 = lexer.GetToken();//ID	CONSUME
-	if (t1.token_type != INPUT || t2.token_type != ID) {
+	stmt_node* st = nullptr;
+	if (t1.token_type == INPUT && t2.token_type == ID) {
+		st = new stmt_node();//create a new node 
+		st->statement_type = INPUT;
+		//check if t2 is in the table
+		int loca = loc(t2.lexeme);//check if the token is in the symbol table and if so add it to its location to the op1 member
+		if(loca != -1)//we have seen the symbol before
+			st->op1 = loca;//store the location of the symbol in the st member
+		else{//we havent seen the symbol before
+			mem[next_availible] = t2.lexeme;//store the symbol;
+			st->op1 = next_availible;//store the location of the symbol
+			next_availible++;//increase the next availible
+		}
+	}
+	else{
 		syntax_error();
 	}
 	parse_expr();
@@ -194,7 +223,7 @@ void Parser::parse_input_statement() {
 	if (t3.token_type != SEMICOLON) {
 		syntax_error();
 	}
-	return;
+	return st;
 }
 
 void Parser::parse_ouput_statement() {
@@ -297,28 +326,18 @@ void Parser::parse_primary() {
 	return;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-string* mem = new string[1000];// dynamic array of 1000 elements to hold data
-
-//this function wil take in a string which is the token t.lexme and will look to see if it already exists in the symbol table
-//and return its location in the array 
-int loc(std::string s){
-	int count = 0 ; 
-	while(count < 1000){
-		if(mem[count] == s){
-		return count;
-		}
-	}
-	return -1;//if not found in the symbol table we return a -1
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int main()
 {
+	
 	LexicalAnalyzer lexer;
 	Token token;
 	Parser p;//make a parser object to parse the input
-	p.parse_input();
+	
+
+
+
+	//p.parse_input();
 
 }

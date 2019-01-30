@@ -28,6 +28,9 @@ click the launch button in the top left corner , make sure that you add breakpoi
 code should run and stop at the breakpoints
 //if you want to change what gets redirected to the program go into the JSON file and give it the file you want to use 
 
+//put this in the args section of the json file to redirect stdin
+"${workspaceFolder}<./tests/t1_ss_outputstmt.txt"
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
