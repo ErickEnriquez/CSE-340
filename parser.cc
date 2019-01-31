@@ -342,8 +342,8 @@ void Parser::parse_inputs() {
 	Token t = lexer.GetToken();// NUM	CONSUME!!!!!!
 	if (t.token_type == NUM) {
 		//do stuff here
-		cout << t.lexeme << endl;
-		parse_inputs();
+		stack->push(t);//store the token on the stack
+		parse_inputs();//recurse
 	}
 	else if (t.token_type == END_OF_FILE) {
 		lexer.UngetToken(t);
@@ -368,13 +368,7 @@ int main()
 		table[i].location = 0;
 		table[i].constant = false;
 	}
-	Token t;
-	for (int i = 0; i <= 2; i++) {
-		 t = lexer.GetToken();
-		allocate(t, table, next_availible, mem);
-		stack->push(t);
-	}
-	//p.parse_input();
+	p.parse_input();
 	while (stack->isEmpty() == false) {
 		cout << stack->pop().lexeme << endl;
 	}
