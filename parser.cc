@@ -342,7 +342,7 @@ void Parser::parse_primary() {
 
 	}
 	else if (t.token_type == NUM) {
-		cout << "hello";
+		
 	}
 	else {
 		syntax_error();
