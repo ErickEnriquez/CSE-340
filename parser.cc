@@ -20,11 +20,11 @@ struct linkedList* list = new linkedList();//create a global linkedList
 
 //this function wil take in a string which is the token t.lexme and will look to see if it already exists in the symbol table
 //and return its location in the array 
-int loc(std::string s){
-	int count = 0 ; 
-	while(count < 1000){
-		if(mem[count] == s){
-		return count;
+int loc(std::string s) {
+	int count = 0;
+	while (count < 1000) {
+		if (mem[count] == s) {
+			return count;
 		}
 		count++;
 	}
@@ -147,23 +147,13 @@ void Parser::parse_main() {
 // should go back into this becuase it could cause infinite recursion
 void Parser::parse_statement_list() {
 	Token t = lexer.GetToken();//if we get a number we have finished parsing the statements and we are in the inputs
-	if (t.token_type == ENDPROC) {//if we get endproc then we are done parsing statements
+	/*if (t.token_type == ENDPROC) {//if we get endproc then we are done parsing statements
 		lexer.UngetToken(t);
 		return;
-	}
-	else if (t.token_type != NUM) {//while there are more statements to parse
+	}*/
+	 if (t.token_type != NUM) {//while there are more statements to parse
 		lexer.UngetToken(t);
-		stmt_node* st =  parse_statement();
-		if(list->start == nullptr)
-			list->start = st;
-		else{
-			stmt_node* temp =  list->start;
-			while(temp->next != nullptr){
-				temp = temp->next;
-			}
-			temp->next = st;
-
-		}
+		stmt_node* st = parse_statement();
 		
 	}
 	else if (t.token_type == NUM) {
@@ -173,13 +163,13 @@ void Parser::parse_statement_list() {
 	else if (t.token_type == END_OF_FILE) {
 		syntax_error();
 	}
-
+	 parse_statement_list();
 }
 
 struct stmt_node* Parser::parse_statement() {
 	Token t1 = lexer.GetToken();// INPUT || OUTPUT || ID || DO
 	Token t2 = lexer.GetToken();// EQUAL || SEMICOLON
-	stmt_node* node = nullptr ;
+	stmt_node* node = nullptr;
 	if (t1.token_type == INPUT) {
 		lexer.UngetToken(t2);
 		lexer.UngetToken(t1);
@@ -188,7 +178,7 @@ struct stmt_node* Parser::parse_statement() {
 	else if (t1.token_type == OUTPUT) {
 		lexer.UngetToken(t2);
 		lexer.UngetToken(t1);
-		node =  parse_ouput_statement();
+		node = parse_ouput_statement();
 	}
 	else if (t1.token_type == DO) {
 		lexer.UngetToken(t2);
@@ -208,7 +198,7 @@ struct stmt_node* Parser::parse_statement() {
 	else {
 		syntax_error();
 	}
-return node;
+	return node;
 
 }
 
@@ -222,15 +212,15 @@ stmt_node* Parser::parse_input_statement() {
 		st->statement_type = INPUT;
 		//check if t2 is in the table
 		int loca = loc(t2.lexeme);//check if the token is in the symbol table and if so add it to its location to the op1 member
-		if(loca != -1)//we have seen the symbol before
+		if (loca != -1)//we have seen the symbol before
 			st->op1 = loca;//store the location of the symbol in the st member
-		else{//we havent seen the symbol before
+		else {//we havent seen the symbol before
 			mem[next_availible] = t2.lexeme;//store the symbol;
 			st->op1 = next_availible;//store the location of the symbol
 			next_availible++;//increase the next availible
 		}
 	}
-	else{
+	else {
 		syntax_error();
 	}
 	parse_expr();
@@ -251,9 +241,9 @@ stmt_node* Parser::parse_ouput_statement() {
 	st->statement_type = OUTPUT;
 	st->next = nullptr;
 	int loca = loc(t2.lexeme);
-	if(loca != -1)
+	if (loca != -1)
 		st->op1 = loca;//store the location of the first symbol in the array
-	else{
+	else {
 		mem[next_availible] = t2.lexeme;//store the symbol in the symbol table
 		st->op1 = next_availible;//store the location of the symbol 
 		next_availible++;//increment next_availible by 1
@@ -264,7 +254,7 @@ stmt_node* Parser::parse_ouput_statement() {
 	if (t3.token_type != SEMICOLON) {
 		syntax_error();
 	}
-	return st ;
+	return st;
 }
 
 void Parser::parse_do_statement() {
@@ -332,7 +322,14 @@ void Parser::parse_expr() {
 		return;
 	}
 	else {
+		lexer.UngetToken(t);
 		parse_primary();
+		t = lexer.GetToken();//check if expression is done
+	if (t.token_type == SEMICOLON) {//if we get a semicolon the expression is done
+		lexer.UngetToken(t);
+			return;
+		}
+		lexer.UngetToken(t);//unget the token
 		parse_operator();
 		parse_primary();
 	}
@@ -345,7 +342,7 @@ void Parser::parse_primary() {
 
 	}
 	else if (t.token_type == NUM) {
-
+		cout << "hello";
 	}
 	else {
 		syntax_error();
@@ -357,7 +354,7 @@ void Parser::parse_primary() {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int main()
 {
-	
+
 	LexicalAnalyzer lexer;
 	Token token;
 	Parser p;//make a parser object to parse the input
