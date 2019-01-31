@@ -8,21 +8,9 @@
 
 #include <string>
 #include "lexer.h"
+#include "defn.h"
 
 
-	struct stmt_node// node for every statment
-{
-    int statement_type;
-    int LHS;
-    int operator_type;
-    int op1;
-    int op2; 
-    struct stmt_node* next;
-};
-
-struct linkedList{//start of the statements
-    struct stmt_node* start;
-};
 
 class Parser {
 private:
@@ -36,18 +24,6 @@ public:
 
 	struct linked_list* head;
 
-	//to do//////////////////////////////////
-	
-	struct stmt_node* parse_input_statement();
-	struct stmt_node* parse_ouput_statement();
-	void parse_procedure_invocation();
-	void parse_do_statement();
-	void parse_assign_statement();
-	void parse_expr();
-	void parse_operator();
-	void parse_primary();
-	void parse_main();
-	void parse_inputs();
 
 	/////////////////////////////////////////////
 	/*done?*/
@@ -59,6 +35,17 @@ public:
 	void parse_procedure_body();
 	void parse_statement_list();
 	struct stmt_node* parse_statement();
+	struct stmt_node* parse_input_statement();
+	struct stmt_node* parse_ouput_statement();
+	void parse_procedure_invocation();
+	void parse_do_statement();
+	void parse_assign_statement();
+	void parse_expr();
+	void parse_operator();
+	void parse_primary();
+	void parse_main();
+	void parse_inputs();
+
 
 	//////////////////////////////////////////////
 	/*DEF DONE*/

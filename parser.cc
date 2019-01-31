@@ -13,22 +13,41 @@
 
 
 using namespace std;
-
-string* mem = new string[1000];// dynamic array of 1000 elements to hold data
+///////////////////////////////////////////////////////////////////////////////////////////
+int* mem = new int[1000];// dynamic array of 1000 elements to hold data
+symbol_table* table = new symbol_table[1000];// create a new symbol table of size 1000
 int next_availible;
-struct linkedList* list = new linkedList();//create a global linkedList
-
+linkedList* list = new linkedList();//create a global linkedList
+///////////////////////////////////////////////////////////////////////////////////////////
 //this function wil take in a string which is the token t.lexme and will look to see if it already exists in the symbol table
 //and return its location in the array 
-int loc(std::string s) {
+int location_in_s_table(Token t, symbol_table* table) {
 	int count = 0;
-	while (count < 1000) {
-		if (mem[count] == s) {
+	while (count < 1000  ) {
+		if (table[count].symbol.lexeme == t.lexeme) {
 			return count;
 		}
 		count++;
 	}
 	return -1;//if not found in the symbol table we return a -1
+}
+struct stack* stack = new struct stack();
+/*the function checks to see if the symbol is in the table and if it is we */
+void allocate(Token t, symbol_table* table, int& next_avail, int* mem) {
+	if (location_in_s_table(t, table) != -1)//if we dont get a -1 from the symbol table then we need to add the symbol to both tables
+		return;
+	else {//if we havent seen the symbol before
+		if (t.token_type == NUM) {
+			table[next_avail].constant = true;//if the token is a constant make not of it
+			mem[next_avail] = stoi(t.lexeme);//store the quantity in the memory table because its a constant
+		}
+		else {
+			table[next_avail].constant = false;//make note that this is not a constant
+		}
+		table[next_avail].symbol = t;//store the symbol at the next available location in memory
+		table[next_avail].location = next_avail;//store the location of the symbol for the mem table
+		next_avail++;
+	}
 }
 
 
@@ -210,15 +229,6 @@ stmt_node* Parser::parse_input_statement() {
 	if (t1.token_type == INPUT && t2.token_type == ID) {
 		st = new stmt_node();//create a new node 
 		st->statement_type = INPUT;
-		//check if t2 is in the table
-		int loca = loc(t2.lexeme);//check if the token is in the symbol table and if so add it to its location to the op1 member
-		if (loca != -1)//we have seen the symbol before
-			st->op1 = loca;//store the location of the symbol in the st member
-		else {//we havent seen the symbol before
-			mem[next_availible] = t2.lexeme;//store the symbol;
-			st->op1 = next_availible;//store the location of the symbol
-			next_availible++;//increase the next availible
-		}
 	}
 	else {
 		syntax_error();
@@ -240,15 +250,7 @@ stmt_node* Parser::parse_ouput_statement() {
 	stmt_node* st = new stmt_node();
 	st->statement_type = OUTPUT;
 	st->next = nullptr;
-	int loca = loc(t2.lexeme);
-	if (loca != -1)
-		st->op1 = loca;//store the location of the first symbol in the array
-	else {
-		mem[next_availible] = t2.lexeme;//store the symbol in the symbol table
-		st->op1 = next_availible;//store the location of the symbol 
-		next_availible++;//increment next_availible by 1
 
-	}
 	parse_expr();
 	Token t3 = lexer.GetToken();//SEMICOLON	CONSUME
 	if (t3.token_type != SEMICOLON) {
@@ -299,22 +301,7 @@ void Parser::parse_operator() {
 
 
 
-void Parser::parse_inputs() {
-	Token t = lexer.GetToken();// NUM	CONSUME!!!!!!
-	if (t.token_type == NUM) {
-		//do stuff here
-		cout<<t.lexeme <<endl;
-		parse_inputs();
-	}
-	else if (t.token_type == END_OF_FILE) {
-		lexer.UngetToken(t);
-		//program is done parsing input
-	}
-	else {
-		syntax_error();
-	}
-	return;
-}
+
 
 void Parser::parse_expr() {
 	Token t = lexer.GetToken();//If we get a semicolon then we are done parsing expression
@@ -351,6 +338,22 @@ void Parser::parse_primary() {
 	return;
 }
 
+void Parser::parse_inputs() {
+	Token t = lexer.GetToken();// NUM	CONSUME!!!!!!
+	if (t.token_type == NUM) {
+		//do stuff here
+		cout << t.lexeme << endl;
+		parse_inputs();
+	}
+	else if (t.token_type == END_OF_FILE) {
+		lexer.UngetToken(t);
+		//program is done parsing input
+	}
+	else {
+		syntax_error();
+	}
+	return;
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int main()
@@ -360,6 +363,22 @@ int main()
 	Token token;
 	Parser p;//make a parser object to parse the input
 	list->start = nullptr;//initialize the start of the list to be a nullptr
-	p.parse_input();
-
+	for (int i = 0; i < 1000; i++) {//go through and make all of the quantities in the tables 0
+		mem[i] = 0;
+		table[i].location = 0;
+		table[i].constant = false;
+	}
+	Token t;
+	for (int i = 0; i <= 2; i++) {
+		 t = lexer.GetToken();
+		allocate(t, table, next_availible, mem);
+		stack->push(t);
+	}
+	//p.parse_input();
+	while (stack->isEmpty() == false) {
+		cout << stack->pop().lexeme << endl;
+	}
+	
+	
+	return 0;
 }
