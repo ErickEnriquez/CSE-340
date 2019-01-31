@@ -380,7 +380,7 @@ int main()
 	}
 	for(int i  = 0 ; i< 1000 ; i++){
 		if(table[i].symbol.lexeme.empty() == false)
-		cout<<table[i].symbol.lexeme << "location " << table[i].location << " contents " << mem[i] << "\n";
+		cout<<table[i].symbol.lexeme << " location " << table[i].location << " contents " << mem[i] << "\n";
 	}
 
 	
