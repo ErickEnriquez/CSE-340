@@ -117,7 +117,7 @@ void Parser::parse_proc_decl() {
 
 void Parser::parse_procedure_name() {
 	Token t = lexer.GetToken();//ID OR NUM , CONSUME TOKEN
-	if (t.token_type != ID || t.token_type != NUM)
+	if (t.token_type != ID && t.token_type != NUM)
 		syntax_error();
 	return;
 }
@@ -147,14 +147,14 @@ void Parser::parse_main() {
 // should go back into this becuase it could cause infinite recursion
 void Parser::parse_statement_list() {
 	Token t = lexer.GetToken();//if we get a number we have finished parsing the statements and we are in the inputs
-	/*if (t.token_type == ENDPROC) {//if we get endproc then we are done parsing statements
+	if (t.token_type == ENDPROC) {//if we get endproc then we are done parsing statements
 		lexer.UngetToken(t);
 		return;
-	}*/
-	 if (t.token_type != NUM) {//while there are more statements to parse
+	}
+	if (t.token_type != NUM) {//while there are more statements to parse
 		lexer.UngetToken(t);
 		stmt_node* st = parse_statement();
-		
+
 	}
 	else if (t.token_type == NUM) {
 		lexer.UngetToken(t);
@@ -163,7 +163,7 @@ void Parser::parse_statement_list() {
 	else if (t.token_type == END_OF_FILE) {
 		syntax_error();
 	}
-	 parse_statement_list();
+	parse_statement_list();
 }
 
 struct stmt_node* Parser::parse_statement() {
@@ -303,6 +303,7 @@ void Parser::parse_inputs() {
 	Token t = lexer.GetToken();// NUM	CONSUME!!!!!!
 	if (t.token_type == NUM) {
 		//do stuff here
+		cout<<t.lexeme <<endl;
 		parse_inputs();
 	}
 	else if (t.token_type == END_OF_FILE) {
@@ -325,8 +326,8 @@ void Parser::parse_expr() {
 		lexer.UngetToken(t);
 		parse_primary();
 		t = lexer.GetToken();//check if expression is done
-	if (t.token_type == SEMICOLON) {//if we get a semicolon the expression is done
-		lexer.UngetToken(t);
+		if (t.token_type == SEMICOLON) {//if we get a semicolon the expression is done
+			lexer.UngetToken(t);
 			return;
 		}
 		lexer.UngetToken(t);//unget the token
@@ -342,7 +343,7 @@ void Parser::parse_primary() {
 
 	}
 	else if (t.token_type == NUM) {
-		
+
 	}
 	else {
 		syntax_error();
