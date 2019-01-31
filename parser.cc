@@ -18,6 +18,7 @@ int* mem = new int[1000];// dynamic array of 1000 elements to hold data
 symbol_table* table = new symbol_table[1000];// create a new symbol table of size 1000
 int next_availible;
 linkedList* list = new linkedList();//create a global linkedList
+struct stack* stack = new struct stack();//stack to store inputs
 ///////////////////////////////////////////////////////////////////////////////////////////
 //this function wil take in a string which is the token t.lexme and will look to see if it already exists in the symbol table
 //and return its location in the array 
@@ -31,7 +32,6 @@ int location_in_s_table(Token t, symbol_table* table) {
 	}
 	return -1;//if not found in the symbol table we return a -1
 }
-struct stack* stack = new struct stack();
 /*the function checks to see if the symbol is in the table and if it is we */
 void allocate(Token t, symbol_table* table, int& next_avail, int* mem) {
 	if (location_in_s_table(t, table) != -1)//if we dont get a -1 from the symbol table then we need to add the symbol to both tables
@@ -226,6 +226,7 @@ stmt_node* Parser::parse_input_statement() {
 	Token t1 = lexer.GetToken();//INPUT CONSUME
 	Token t2 = lexer.GetToken();//ID	CONSUME
 	stmt_node* st = nullptr;
+	allocate(t2,table,next_availible,mem);//allocate the ID into the symbol table
 	if (t1.token_type == INPUT && t2.token_type == ID) {
 		st = new stmt_node();//create a new node 
 		st->statement_type = INPUT;
@@ -263,6 +264,7 @@ stmt_node* Parser::parse_ouput_statement() {
 void Parser::parse_do_statement() {
 	Token t1 = lexer.GetToken();//DO	CONSUME
 	Token t2 = lexer.GetToken();//ID	CONSUME
+	allocate(t2,table,next_availible,mem);//allocate the token into the symbol table
 	if (t1.token_type != DO || t2.token_type != ID) {
 		syntax_error();
 	}
@@ -273,6 +275,7 @@ void Parser::parse_do_statement() {
 void Parser::parse_procedure_invocation() {
 	Token t1 = lexer.GetToken();//ID	CONSUME
 	Token t2 = lexer.GetToken();//SEMICOLON	CONSUME
+	allocate(t2,table,next_availible,mem);//allocate id to symbol table
 	if (t1.token_type != ID || t2.token_type != SEMICOLON) {
 		syntax_error();
 	}
@@ -282,6 +285,7 @@ void Parser::parse_procedure_invocation() {
 void Parser::parse_assign_statement() {
 	Token t1 = lexer.GetToken();//ID	CONSUME
 	Token t2 = lexer.GetToken();//EQUAL	CONSUME
+	allocate(t1 , table, next_availible , mem);//allocate the symbol to the table
 	if (t1.token_type != ID || t2.token_type != EQUAL) {
 		syntax_error();
 	}
@@ -299,9 +303,6 @@ void Parser::parse_operator() {
 		syntax_error();
 	return;
 }
-
-
-
 
 
 void Parser::parse_expr() {
@@ -367,16 +368,21 @@ int main()
 		table[i].constant = false;
 	}
 	p.parse_input();
-	cout<<"symbols-----------------------";
-	for(int i  = 0 ; i<=1000 ; i++){
-		if(table[i].symbol.lexeme.empty() == false)
-			cout<<table[i].symbol.lexeme<<endl;
-	}
-	cout<<"inputs----------------------";
+	struct stack * s2 = new struct stack();
 	while (stack->isEmpty() == false) {
-		cout << stack->pop().lexeme << endl;
+		s2->push(stack->pop());
 	}
-	
+	int i = 0; 
+	while(s2->isEmpty() == false && i<=next_availible){//assign the locations in memory using the stack
+		if(table[i].constant == false )
+		mem[i] = stoi(s2->pop().lexeme);
+		i++;
+	}
+	for(int i  = 0 ; i< 1000 ; i++){
+		if(table[i].symbol.lexeme.empty() == false)
+		cout<<table[i].symbol.lexeme << "location " << table[i].location << " contents " << mem[i] << "\n";
+	}
+
 	
 	return 0;
 }

@@ -29,7 +29,7 @@ struct input_node {
 	Token t;
 	input_node* nextToken;
 };
-//hold the nnodes in a stack
+//hold the nodes in a stack
 struct stack {
 	input_node* top;
 	stack() {
