@@ -247,6 +247,7 @@ stmt_node* Parser::parse_ouput_statement() {
 	if (t1.token_type != OUTPUT || t2.token_type != ID) {
 		syntax_error();
 	}
+	allocate(t2,table,next_availible,mem);//allocate the variable into the symbol table
 	stmt_node* st = new stmt_node();
 	st->statement_type = OUTPUT;
 	st->next = nullptr;
@@ -326,11 +327,8 @@ void Parser::parse_expr() {
 
 void Parser::parse_primary() {
 	Token t = lexer.GetToken(); //ID || NUM
-	if (t.token_type == ID) {
-
-	}
-	else if (t.token_type == NUM) {
-
+	if (t.token_type == ID || t.token_type == NUM ) {
+		allocate(t,table,next_availible,mem);//allocate the token onto the symbol table
 	}
 	else {
 		syntax_error();
@@ -369,6 +367,12 @@ int main()
 		table[i].constant = false;
 	}
 	p.parse_input();
+	cout<<"symbols-----------------------";
+	for(int i  = 0 ; i<=1000 ; i++){
+		if(table[i].symbol.lexeme.empty() == false)
+			cout<<table[i].symbol.lexeme<<endl;
+	}
+	cout<<"inputs----------------------";
 	while (stack->isEmpty() == false) {
 		cout << stack->pop().lexeme << endl;
 	}
