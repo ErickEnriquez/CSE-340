@@ -88,7 +88,14 @@ void execute_program(linkedList* list) {
 		else if(pc->statement_type == INVOKE){
 			execute_program(pc->code);//run the code in the procedure
 		}
-		//else()needs more of the different cases here
+		else if (pc->statement_type == DO ){
+			int copy = mem[pc->op1]; //store the value of op1 in a copy variable this is the number of times we will iterate
+			
+			while(copy > 0){
+				execute_program(procTable[pc->op2].code);//execute the program
+				copy--;
+			}
+		}
 		pc = pc->next;//moce down the list
 	}
 }
@@ -247,7 +254,7 @@ struct stmt_node* Parser::parse_statement() {
 	else if (t1.token_type == DO) {
 		lexer.UngetToken(t2);
 		lexer.UngetToken(t1);
-		parse_do_statement();
+		node = parse_do_statement();
 	}
 	else if (t1.token_type == ID && t2.token_type == EQUAL) {
 		lexer.UngetToken(t2);
@@ -314,15 +321,20 @@ stmt_node* Parser::parse_ouput_statement() {
 	return st;
 }
 
-void Parser::parse_do_statement() {
+stmt_node* Parser::parse_do_statement() {
 	Token t1 = lexer.GetToken();//DO	CONSUME
 	Token t2 = lexer.GetToken();//ID	CONSUME
 	allocate(t2, table, next_availible, mem);//allocate the token into the symbol table
 	if (t1.token_type != DO || t2.token_type != ID) {
 		syntax_error();
 	}
-	parse_procedure_invocation();
-	return;
+	stmt_node* st = new stmt_node();//create a new node 
+	st->statement_type = DO;
+	st->next = nullptr;
+	//cout<<"token " << t2.lexeme << " is in the table at location " << location_in_s_table(t2,table) << " with contents " << mem[location_in_s_table(t2,table)]<<endl;
+	st->op1  = location_in_s_table(t2,table);//store the location of how much we will be iterating by
+	st->op2 =  parse_procedure_invocation()->op1;//store the location of the procedure in memory of op2
+	return st;
 }
 
 stmt_node* Parser::parse_procedure_invocation() {
@@ -335,6 +347,7 @@ stmt_node* Parser::parse_procedure_invocation() {
 	}
 	st->statement_type = INVOKE;
 	st->code = procTable[location_in_p_table(t1,procTable)].code;//link the statment code with the linked list of the procedure
+	st->op1 = location_in_p_table(t1,procTable);//store the location of the procedure in the proc_table
 	return st;
 }
 

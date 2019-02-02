@@ -38,7 +38,7 @@ public:
 	struct stmt_node* parse_input_statement();
 	struct stmt_node* parse_ouput_statement();
 	struct stmt_node* parse_procedure_invocation();
-	void parse_do_statement();
+	struct stmt_node* parse_do_statement();
 	stmt_node* parse_assign_statement();
 	void parse_expr(stmt_node*s);
 	void parse_operator(stmt_node*s);
