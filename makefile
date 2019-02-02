@@ -1,3 +1,3 @@
 mfile: inputbuf.cc lexer.cc parser.cc
-	g++ -g inputbuf.cc lexer.cc parser.cc -o p1
+	g++ -g inputbuf.cc lexer.cc parser.cc -o a.out
 

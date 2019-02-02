@@ -9,7 +9,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/p1",
+            "program": "${workspaceFolder}/a.out",
             "args": ["${workspaceFolder}<./tests/t2_ss_inputstmt.txt"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
