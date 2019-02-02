@@ -24,6 +24,8 @@ struct linkedList* list = new struct linkedList();//create a list to hold the st
 ///////////////////////////////////////////////////////////////////////////////////////////
 //this function wil take in a string which is the token t.lexme and will look to see if it already exists in the symbol table
 //and return its location in the array 
+
+
 int location_in_s_table(Token t, symbol_table* table) {
 	int count = 0;
 	while (count < 1000  ) {
@@ -59,7 +61,8 @@ void execute_program(linkedList* list){
 	if(pc->statement_type == OUTPUT)//if the statment type is an output statement
 		cout<<mem[pc->LHS] << " " ;
 	else if(pc->statement_type == INPUT){
-		mem[pc->op1] =  stoi(s2->pop().lexeme);//pop the input from the stack and store it at the memory location requested
+		mem[pc->op1] = stoi(s2->pop().lexeme);//the input
+		//pop the input from the stack and store it at the memory location requested
 	}
 	else if(pc->statement_type == ASSIGN){//if  we get an assin statment find out which one it could be
 		switch(pc->operator_type){
@@ -322,7 +325,7 @@ stmt_node* Parser::parse_assign_statement() {
 	allocate(t1 , table, next_availible , mem);//allocate the symbol to the table
 	stmt_node* st = new stmt_node();
 	st->statement_type = ASSIGN;
-	st->LHS = mem[location_in_s_table(t1,table)];//get the address of the left hand side of the assign
+	st->LHS = location_in_s_table(t1,table);//get the address of the left hand side of the assign
 	
 	if (t1.token_type != ID || t2.token_type != EQUAL) {
 		syntax_error();
@@ -422,7 +425,7 @@ int main()
 		if(table[i].symbol.lexeme.empty() == false)
 		cout<<table[i].symbol.lexeme << " location " << table[i].location << " contents " << mem[i] << "\n";
 	}*/
-
+	
 	execute_program(list);//execute the program
 
 	return 0;
