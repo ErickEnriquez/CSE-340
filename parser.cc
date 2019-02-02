@@ -61,6 +61,16 @@ void execute_program(linkedList* list){
 	else if(pc->statement_type == INPUT){
 		mem[pc->op1] =  stoi(s2->pop().lexeme);//pop the input from the stack and store it at the memory location requested
 	}
+	else if(pc->statement_type == ASSIGN){//if  we get an assin statment find out which one it could be
+		switch(pc->operator_type){
+			case PLUS: mem[pc->LHS] = mem[pc->op1]+ mem[pc->op2]; break;
+			case MINUS: mem[pc->LHS] = mem[pc->op1]- mem[pc->op2]; break;
+			case MULT: mem[pc->LHS] = mem[pc->op1]* mem[pc->op2]; break;
+			case DIV: mem[pc->LHS] = mem[pc->op1]/ mem[pc->op2]; break;
+			case NOOP: mem[pc->LHS]= mem[pc->op1];break;// if we are just assigning with 1 operand
+			default: break;
+		}
+	}
 	//else()needs more of the different cases here
 	pc= pc->next;//moce down the list
 	}
@@ -223,7 +233,7 @@ struct stmt_node* Parser::parse_statement() {
 	else if (t1.token_type == ID && t2.token_type == EQUAL) {
 		lexer.UngetToken(t2);
 		lexer.UngetToken(t1);
-		parse_assign_statement();
+		node = parse_assign_statement();
 	}
 	else if (t1.token_type == ID && t2.token_type == SEMICOLON) {
 		lexer.UngetToken(t2);
@@ -306,28 +316,32 @@ void Parser::parse_procedure_invocation() {
 	return;
 }
 
-void Parser::parse_assign_statement() {
+stmt_node* Parser::parse_assign_statement() {
 	Token t1 = lexer.GetToken();//ID	CONSUME
 	Token t2 = lexer.GetToken();//EQUAL	CONSUME
-	stmt_node* st = new stmt_node();
-	
 	allocate(t1 , table, next_availible , mem);//allocate the symbol to the table
+	stmt_node* st = new stmt_node();
+	st->statement_type = ASSIGN;
+	st->LHS = mem[location_in_s_table(t1,table)];//get the address of the left hand side of the assign
+	
 	if (t1.token_type != ID || t2.token_type != EQUAL) {
 		syntax_error();
 	}
+	
 	parse_expr(st);
 	Token t3 = lexer.GetToken();//SEMICOLON	CONSUME
 	if (t3.token_type != SEMICOLON) {
 		syntax_error();
 	}
-	return;
+	return st;
 }
 
-Token Parser::parse_operator() {
+void Parser::parse_operator(stmt_node* s) {
 	Token t = lexer.GetToken();// ID || MINUS || DIV || MULT	CONSUME!!!!
 	if (t.token_type != PLUS && t.token_type != MINUS && t.token_type != DIV && t.token_type != MULT)
 		syntax_error();
-	return t;
+	s->operator_type = t.token_type;//get the type of operator we will be using  + || - || * || /
+	return ;
 }
 
 
@@ -340,17 +354,24 @@ void Parser::parse_expr(stmt_node* st ) {
 	else {
 		lexer.UngetToken(t);
 		Token temp =  parse_primary();
-		if(temp.token_type == NUM)
-			st->op1  = stoi(temp.lexeme);
+		if(temp.token_type == NUM)//if we get a constant
+			st->op1  = stoi(temp.lexeme);//if the first op is a constant store it in op1
+		else
+			st->op1 = mem[location_in_s_table(temp,table)];//store the value of the variable in op1
+		
 		t = lexer.GetToken();//check if expression is done
 		if (t.token_type == SEMICOLON) {//if we get a semicolon the expression is done
 			lexer.UngetToken(t);
 			return;
 		}
 		lexer.UngetToken(t);//unget the token
-		temp = parse_operator();
+		 parse_operator(st);
 		
-		parse_primary();
+		temp =  parse_primary();
+		if(temp.token_type == NUM)
+			st->op2 = stoi(temp.lexeme);//we the 2nd operator is a constant then we can just store it in op2
+		else
+			st->op2 = mem[location_in_s_table(temp,table)];//store the address of op2
 	}
 }
 

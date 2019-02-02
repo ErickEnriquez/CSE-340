@@ -10,7 +10,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/a.out",
-            "args": ["${workspaceFolder}<./tests/t2_ss_inputstmt.txt"],
+            "args": ["${workspaceFolder}<./tests/t3_ss_assignplus.txt"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
