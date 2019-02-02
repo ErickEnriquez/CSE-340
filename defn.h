@@ -23,6 +23,17 @@ struct stmt_node// node for every statment
 
 struct linkedList {//start of the statements
 	struct stmt_node* start;
+	void add_statement(stmt_node* node){
+		stmt_node* temp = this->start;
+		if(start == nullptr)
+			start = node;
+		else{
+		while(temp->next != nullptr){
+			temp = temp->next;
+		}
+			temp->next = node;//add the node to the end of the list
+		}
+	}
 };
 //nodes that will be used to store the inputs of the program
 struct input_node {

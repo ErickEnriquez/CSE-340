@@ -17,8 +17,10 @@ using namespace std;
 int* mem = new int[1000];// dynamic array of 1000 elements to hold data
 symbol_table* table = new symbol_table[1000];// create a new symbol table of size 1000
 int next_availible;
-linkedList* list = new linkedList();//create a global linkedList
 struct stack* stack = new struct stack();//stack to store inputs
+struct stack * s2 = new struct stack(); //since inputs will be reverse need another stack to put them in order
+struct linkedList* list = new struct linkedList();//create a list to hold the statments
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 //this function wil take in a string which is the token t.lexme and will look to see if it already exists in the symbol table
 //and return its location in the array 
@@ -50,6 +52,19 @@ void allocate(Token t, symbol_table* table, int& next_avail, int* mem) {
 	}
 }
 
+//this function will execute the program from a given linked list
+void execute_program(linkedList* list){
+	stmt_node* pc = list->start;//get the start for the linked list
+	while(pc != nullptr){
+	if(pc->statement_type == OUTPUT)//if the statment type is an output statement
+		cout<<mem[pc->op1] ;
+	else if(pc->statement_type == INPUT){
+		mem[pc->op1] =  stoi(s2->pop().lexeme);//pop the input from the stack and store it at the memory location requested
+	}
+	//else()needs more of the different cases here
+	pc= pc->next;//moce down the list
+	}
+}
 
 void Parser::syntax_error()
 {
@@ -87,7 +102,6 @@ Token Parser::peek()
 void Parser::parse_input() {
 	parse_program();
 	parse_inputs();
-	cout << "parse successful\n";
 	return;
 }
 
@@ -165,6 +179,7 @@ void Parser::parse_main() {
 
 // should go back into this becuase it could cause infinite recursion
 void Parser::parse_statement_list() {
+
 	Token t = lexer.GetToken();//if we get a number we have finished parsing the statements and we are in the inputs
 	if (t.token_type == ENDPROC) {//if we get endproc then we are done parsing statements
 		lexer.UngetToken(t);
@@ -173,6 +188,7 @@ void Parser::parse_statement_list() {
 	if (t.token_type != NUM) {//while there are more statements to parse
 		lexer.UngetToken(t);
 		stmt_node* st = parse_statement();
+		list->add_statement(st );//add the node into the statment list
 
 	}
 	else if (t.token_type == NUM) {
@@ -192,7 +208,7 @@ struct stmt_node* Parser::parse_statement() {
 	if (t1.token_type == INPUT) {
 		lexer.UngetToken(t2);
 		lexer.UngetToken(t1);
-		parse_input_statement();
+		node = parse_input_statement();
 	}
 	else if (t1.token_type == OUTPUT) {
 		lexer.UngetToken(t2);
@@ -222,7 +238,7 @@ struct stmt_node* Parser::parse_statement() {
 }
 
 //this function takes in retuns a stmt_node* to be added into the linked list later
-stmt_node* Parser::parse_input_statement() {
+ stmt_node* Parser::parse_input_statement() {
 	Token t1 = lexer.GetToken();//INPUT CONSUME
 	Token t2 = lexer.GetToken();//ID	CONSUME
 	stmt_node* st = nullptr;
@@ -230,6 +246,11 @@ stmt_node* Parser::parse_input_statement() {
 	if (t1.token_type == INPUT && t2.token_type == ID) {
 		st = new stmt_node();//create a new node 
 		st->statement_type = INPUT;
+		st->next  = nullptr;
+		st->LHS = location_in_s_table(t2,table);//store the location of the left hand side
+		st->op1 = location_in_s_table(t2,table);//store the location of  op1
+		st->operator_type = NOOP;
+
 	}
 	else {
 		syntax_error();
@@ -249,10 +270,13 @@ stmt_node* Parser::parse_ouput_statement() {
 		syntax_error();
 	}
 	allocate(t2,table,next_availible,mem);//allocate the variable into the symbol table
-	stmt_node* st = new stmt_node();
-	st->statement_type = OUTPUT;
+	stmt_node* st = new stmt_node();//create a new statement node
+	st->statement_type = OUTPUT; //mkae not of the type of statment we are making
+	int x = location_in_s_table(t2,table);//make the LHS the location of the ID in the symbol table
+	st->LHS = x;
+	st->op1 = x;
+	st->operator_type = NOOP;//the oeprator type for this statment is a no-op
 	st->next = nullptr;
-
 	parse_expr();
 	Token t3 = lexer.GetToken();//SEMICOLON	CONSUME
 	if (t3.token_type != SEMICOLON) {
@@ -285,6 +309,8 @@ void Parser::parse_procedure_invocation() {
 void Parser::parse_assign_statement() {
 	Token t1 = lexer.GetToken();//ID	CONSUME
 	Token t2 = lexer.GetToken();//EQUAL	CONSUME
+	stmt_node* st = new stmt_node();
+	
 	allocate(t1 , table, next_availible , mem);//allocate the symbol to the table
 	if (t1.token_type != ID || t2.token_type != EQUAL) {
 		syntax_error();
@@ -368,21 +394,16 @@ int main()
 		table[i].constant = false;
 	}
 	p.parse_input();
-	struct stack * s2 = new struct stack();
 	while (stack->isEmpty() == false) {
 		s2->push(stack->pop());
 	}
-	int i = 0; 
-	while(s2->isEmpty() == false && i<=next_availible){//assign the locations in memory using the stack
-		if(table[i].constant == false )
-		mem[i] = stoi(s2->pop().lexeme);
-		i++;
-	}
-	for(int i  = 0 ; i< 1000 ; i++){
+
+	/*for(int i  = 0 ; i< 1000 ; i++){
 		if(table[i].symbol.lexeme.empty() == false)
 		cout<<table[i].symbol.lexeme << " location " << table[i].location << " contents " << mem[i] << "\n";
-	}
+	}*/
 
-	
+	execute_program(list);//execute the program
+
 	return 0;
 }
