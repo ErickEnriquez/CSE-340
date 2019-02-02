@@ -10,6 +10,11 @@ struct symbol_table {
 
 };
 
+struct proc_table{//this will store the procedures also with their code
+	std::string procName;//node of the procedure
+	struct linkedList* code;//code to the procedure
+};
+
 struct stmt_node// node for every statment
 {
 	int statement_type;

@@ -10,7 +10,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/a.out",
-            "args": ["${workspaceFolder}<./tests/t70_longinput8.txt"],
+            "args": ["${workspaceFolder}<./tests/t1_ss_ouputstmt.txt"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

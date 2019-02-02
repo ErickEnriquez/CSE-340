@@ -31,9 +31,9 @@ public:
 	void parse_program();
 	void parse_proc_decl_section();
 	void parse_proc_decl();
-	void parse_procedure_name();
-	void parse_procedure_body();
-	void parse_statement_list();
+	Token parse_procedure_name();
+	void parse_procedure_body(linkedList* stmtl);
+	linkedList* parse_statement_list(linkedList* stmntl);
 	struct stmt_node* parse_statement();
 	struct stmt_node* parse_input_statement();
 	struct stmt_node* parse_ouput_statement();
