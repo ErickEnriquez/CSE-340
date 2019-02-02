@@ -255,7 +255,7 @@ struct stmt_node* Parser::parse_statement() {
 	else {
 		syntax_error();
 	}
-	parse_expr();
+	parse_expr(st);//
 	Token t3 = lexer.GetToken();//SEMICOLON CONSUME
 	if (t3.token_type != SEMICOLON) {
 		syntax_error();
@@ -277,7 +277,7 @@ stmt_node* Parser::parse_ouput_statement() {
 	st->op1 = x;
 	st->operator_type = NOOP;//the oeprator type for this statment is a no-op
 	st->next = nullptr;
-	parse_expr();
+	parse_expr(st);
 	Token t3 = lexer.GetToken();//SEMICOLON	CONSUME
 	if (t3.token_type != SEMICOLON) {
 		syntax_error();
@@ -315,7 +315,7 @@ void Parser::parse_assign_statement() {
 	if (t1.token_type != ID || t2.token_type != EQUAL) {
 		syntax_error();
 	}
-	parse_expr();
+	parse_expr(st);
 	Token t3 = lexer.GetToken();//SEMICOLON	CONSUME
 	if (t3.token_type != SEMICOLON) {
 		syntax_error();
@@ -323,15 +323,15 @@ void Parser::parse_assign_statement() {
 	return;
 }
 
-void Parser::parse_operator() {
+Token Parser::parse_operator() {
 	Token t = lexer.GetToken();// ID || MINUS || DIV || MULT	CONSUME!!!!
 	if (t.token_type != PLUS && t.token_type != MINUS && t.token_type != DIV && t.token_type != MULT)
 		syntax_error();
-	return;
+	return t;
 }
 
 
-void Parser::parse_expr() {
+void Parser::parse_expr(stmt_node* st ) {
 	Token t = lexer.GetToken();//If we get a semicolon then we are done parsing expression
 	if (t.token_type == SEMICOLON) {
 		lexer.UngetToken(t);
@@ -339,20 +339,23 @@ void Parser::parse_expr() {
 	}
 	else {
 		lexer.UngetToken(t);
-		parse_primary();
+		Token temp =  parse_primary();
+		if(temp.token_type == NUM)
+			st->op1  = stoi(temp.lexeme);
 		t = lexer.GetToken();//check if expression is done
 		if (t.token_type == SEMICOLON) {//if we get a semicolon the expression is done
 			lexer.UngetToken(t);
 			return;
 		}
 		lexer.UngetToken(t);//unget the token
-		parse_operator();
+		temp = parse_operator();
+		
 		parse_primary();
 	}
 }
 
 
-void Parser::parse_primary() {
+Token Parser::parse_primary() {
 	Token t = lexer.GetToken(); //ID || NUM
 	if (t.token_type == ID || t.token_type == NUM ) {
 		allocate(t,table,next_availible,mem);//allocate the token onto the symbol table
@@ -360,7 +363,7 @@ void Parser::parse_primary() {
 	else {
 		syntax_error();
 	}
-	return;
+	return t;//return the token
 }
 
 void Parser::parse_inputs() {

@@ -40,9 +40,9 @@ public:
 	void parse_procedure_invocation();
 	void parse_do_statement();
 	void parse_assign_statement();
-	void parse_expr();
-	void parse_operator();
-	void parse_primary();
+	void parse_expr(stmt_node*s);
+	Token parse_operator();
+	Token parse_primary();
 	void parse_main();
 	void parse_inputs();
 
