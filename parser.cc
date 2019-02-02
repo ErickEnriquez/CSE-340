@@ -57,7 +57,7 @@ void execute_program(linkedList* list){
 	stmt_node* pc = list->start;//get the start for the linked list
 	while(pc != nullptr){
 	if(pc->statement_type == OUTPUT)//if the statment type is an output statement
-		cout<<mem[pc->LHS] ;
+		cout<<mem[pc->LHS] << " " ;
 	else if(pc->statement_type == INPUT){
 		mem[pc->op1] =  stoi(s2->pop().lexeme);//pop the input from the stack and store it at the memory location requested
 	}
@@ -418,10 +418,10 @@ int main()
 		s2->push(stack->pop());
 	}
 
-	for(int i  = 0 ; i< 1000 ; i++){
+	/*for(int i  = 0 ; i< 1000 ; i++){
 		if(table[i].symbol.lexeme.empty() == false)
 		cout<<table[i].symbol.lexeme << " location " << table[i].location << " contents " << mem[i] << "\n";
-	}
+	}*/
 
 	execute_program(list);//execute the program
 
