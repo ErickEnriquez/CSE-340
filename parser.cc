@@ -39,6 +39,14 @@ int location_in_s_table(Token t, symbol_table* table) {
 	}
 	return -1;//if not found in the symbol table we return a -1
 }
+//looks for a procedure in a table and returns the location to it
+int location_in_p_table(Token t , proc_table* table){
+	for(int i = 0 ; i<1000; i++){
+		if(t.lexeme == table[i].procName)
+			return i;
+	}
+	return -1;//return -1 if not found in the procedure table
+}
 /*the function checks to see if the symbol is in the table and if it is we */
 void allocate(Token t, symbol_table* table, int& next_avail, int* mem) {
 	if (location_in_s_table(t, table) != -1)//if we dont get a -1 from the symbol table then we need to add the symbol to both tables
@@ -76,6 +84,9 @@ void execute_program(linkedList* list) {
 			case NOOP: mem[pc->LHS] = mem[pc->op1]; break;// if we are just assigning with 1 operand
 			default: break;
 			}
+		}
+		else if(pc->statement_type == INVOKE){
+			execute_program(pc->code);//run the code in the procedure
 		}
 		//else()needs more of the different cases here
 		pc = pc->next;//moce down the list
@@ -196,12 +207,12 @@ void Parser::parse_main() {
 	return;
 }
 
-// should go back into this becuase it could cause infinite recursion
+// this function takes in a linked list of statement and creates a "program " of linked procedures
 linkedList* Parser::parse_statement_list(linkedList* stmntl) {
 
 	Token t = lexer.GetToken();//if we get a number we have finished parsing the statements and we are in the inputs
 	while (t.token_type != END_OF_FILE) {//while we havent reached the end of the statment list
-		if (t.token_type == ENDPROC) {
+		if (t.token_type == ENDPROC) {//end of procedure
 			lexer.UngetToken(t);
 			return stmntl;//return the list
 		}
@@ -218,25 +229,6 @@ linkedList* Parser::parse_statement_list(linkedList* stmntl) {
 
 	}
 }
-/*if (t.token_type == ENDPROC) {//if we get endproc then we are done parsing statements
-	lexer.UngetToken(t);
-	return;
-}
-if (t.token_type != NUM) {//while there are more statements to parse
-	lexer.UngetToken(t);
-	stmt_node* st = parse_statement();
-	list->add_statement(st );//add the node into the statment list
-
-}
-else if (t.token_type == NUM) {
-	lexer.UngetToken(t);
-	return;
-}
-else if (t.token_type == END_OF_FILE) {
-	syntax_error();
-}*/
-
-//parse_statement_list();
 
 struct stmt_node* Parser::parse_statement() {
 	Token t1 = lexer.GetToken();// INPUT || OUTPUT || ID || DO
@@ -265,7 +257,7 @@ struct stmt_node* Parser::parse_statement() {
 	else if (t1.token_type == ID && t2.token_type == SEMICOLON) {
 		lexer.UngetToken(t2);
 		lexer.UngetToken(t1);
-		parse_procedure_invocation();
+		node = parse_procedure_invocation();
 	}
 	else {
 		syntax_error();
@@ -333,14 +325,17 @@ void Parser::parse_do_statement() {
 	return;
 }
 
-void Parser::parse_procedure_invocation() {
+stmt_node* Parser::parse_procedure_invocation() {
 	Token t1 = lexer.GetToken();//ID	CONSUME
 	Token t2 = lexer.GetToken();//SEMICOLON	CONSUME
 	allocate(t2, table, next_availible, mem);//allocate id to symbol table
+	stmt_node* st = new stmt_node();//allocate a new statement node
 	if (t1.token_type != ID || t2.token_type != SEMICOLON) {
 		syntax_error();
 	}
-	return;
+	st->statement_type = INVOKE;
+	st->code = procTable[location_in_p_table(t1,procTable)].code;//link the statment code with the linked list of the procedure
+	return st;
 }
 
 stmt_node* Parser::parse_assign_statement() {
@@ -451,6 +446,11 @@ int main()
 	}*/
 
 		execute_program(list);//execute the program
+
+	/*for(int i  =  0 ; i< 1000 ; i++){
+		if(procTable[i].procName.empty() == false)
+		cout<<procTable[i].procName << endl <<endl ;
+	}*/
 
 	return 0;
 }

@@ -23,7 +23,7 @@ struct stmt_node// node for every statment
 	int op1;
 	int op2;
 	struct stmt_node* next;
-	struct stmt_node* code;// will be useful in procedure declarations
+	struct linkedList* code;// will be useful in procedure declarations
 };
 
 struct linkedList {//start of the statements
