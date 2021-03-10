@@ -1,0 +1,16 @@
+a , b ;
+{
+    a =  2 ;
+    b = 7 ;
+    SWITCH a
+    {
+        CASE 1 :
+        {
+            print a ;
+        }
+        DEFAULT :
+        {
+            print b ;
+        }
+    }
+}

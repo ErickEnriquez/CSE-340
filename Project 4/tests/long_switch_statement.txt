@@ -1,0 +1,23 @@
+a , b , c , d ;
+{
+a = 7 ;
+b = 8 ;
+c = 76 ;
+d = 10 ;
+
+    SWITCH b 
+    {
+        CASE 8 :
+        {
+            SWITCH d 
+            {
+                CASE 11 :
+                {
+                    print a ;
+                }
+            }
+        }
+
+    }
+    print c ;
+}

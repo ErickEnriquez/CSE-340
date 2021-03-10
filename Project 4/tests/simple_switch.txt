@@ -1,0 +1,28 @@
+a , b , c , d;
+{
+    b = 5 ;
+    a = 100;
+    c = 3 ;
+    SWITCH a
+    {
+        CASE 2 :
+        {
+            print b ;
+        }
+
+        CASE 1 :
+        {
+            print b ;
+        }
+        CASE 3 :
+        {
+            print c ;
+        }
+
+        CASE 100 :
+        {
+            print a ;
+        }
+    }
+    print a ;
+}

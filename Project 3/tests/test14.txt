@@ -1,0 +1,6 @@
+{
+    y : STRING ;
+    x : BOOLEAN ;
+    x = TRUE ;
+    x = ~ y ;
+}

@@ -1,0 +1,75 @@
+some notes for the project, 
+
+lets make sure that that whenever we actually do get an error when we are parsing we actually store 
+the error info and wait until we finish and then see which error has precedence , so that we can output the correct error
+
+
+in our scope object we should have at least 2 members 1 that is a vector with the variables, and then 1 with the type of the variable, then finally one flag to show if the variable was assigned
+
+
+
+
+
+when parsing the only place where variables can be declared is in Var_decl , we should have the parse_id list go through and collect all of the variables that we get
+then when we start parsing type name we can assign it inside of the variable declaration
+
+
+There are 3 basic types of errors that we can get  
+1 Declaration error , which are going to have the form  Error <code> <variable>;
+2 Type mismatch  , which are going to be of the form TYPE MISMATCH <line number> <constraint>
+3 Uninitialized  , which are going to be of the form <name_reference> <line_no name_reference> ,(this one can be more thab just one variable)  
+
+
+
+ERROR 1.2 is an undeclared variable
+to check for this error we will do a check on the right side of a statment and see if the components on the right side have been declared  , we should first check the local scope and see there and if we cannot find it there then we should 
+look in the parent of the scope until we either find it or we reach the outermost scope and it's not there
+
+ERROR 1.3 Variable Not used  , 
+where we should check for this error is in scope before we delete the scope we should go through and make sure that every one of the variables in that scope have been marked as used or referenced
+
+
+
+
+
+
+2.5.1. Type Compatibility Rules
+Type compatibility rules specify which assignments are valid. The Rules are the following.
+• C1: If the types of the lefthand side of an assignment is INT , BOOLEAN , or STRING , the righthand
+side of the assignment should have the same type.
+3
+• C2: If the type of the lefthand side of an assignment is REAL , the type of the righthand side of the
+assignment should be INT or REAL .
+• M1: Assignments that do not satisfy C1 or C2 are not valid. In this case, we say that there is a
+type mismatch.
+2.5.2. Type Inference Rules
+• C3: The types of the operands of an arithmetic operator should be REAL or INT
+• C4: The type of the operands of a binary boolean operator should be BOOLEAN .
+• C5: If neither operand of a relational operator has type INT or REAL , then the operands
+should have the same type. In this case, both types can be STRING or both types can be
+BOOLEAN .
+• C6: If one of the operands of a relational operator has type INT or REAL , then the other
+operand should have type INT or REAL . In this case, the two operands can have different types.
+• C7: The type of a condition should be BOOLEAN .
+• C8: The type of the operand of the NOT operator should be boolean.
+• I1: If C3 is satisfied, and the type of one of the operands of an arithmetic operator is REAL , the
+type of the resulting expression is REAL .
+• I2: For the PLUS , MINUS , and MULT operators, if the types of the two operands are INT , the
+type of the resulting expression is INT .
+• I3: For the DIV operator, if the types of the two operands are INT , the type of the resulting
+expression is REAL .
+• I4: If the operands of a binary boolean operator are BOOLEAN , the type of the resulting expression is BOOLEAN .
+• I5: If C5 and C6 are satisfied, the type of a relational operator expr expr is BOOLEAN .
+• I6: The type of NUM constants is INT
+• I7: The type of REALNUM constants is REAL
+• I8: The type of bool const constants is BOOLEAN
+• I9: The type of STRING CONSTANT constants is STRING
+• M2: If C3, C4, C5, C6, C7 or C8 are not satisfied, the type of the expressions is ERROR. In this
+case, we say that there is a type mismatch
+
+
+
+
+when we are doing type checking , the first things that we should do is make sure that the RHS of a statment is correct , then if that is true then we can go ahead and and check the LHS 
+
+, what this means in effect is that c3, c4  , c5 , c6 , and c8 have precedence over c1 , c2 , and c8 errors
